@@ -1,1 +1,1 @@
-# PastAPI project for Stepik
+# FastAPI project for Stepik
