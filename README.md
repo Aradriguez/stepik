@@ -1,1 +1,1 @@
-# stepik
+# PastAPI project for Stepik
