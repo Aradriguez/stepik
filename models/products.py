@@ -1,25 +1,21 @@
-from stepik.backend.db import Base
-from sqlalchemy import Column, Integer, String, Boolean, Float, ForeignKey
-from sqlalchemy.orm import relationship
+from decimal import Decimal
+from sqlalchemy import String, Boolean, Integer, Numeric
+from sqlalchemy.orm import Mapped, mapped_column, relationship  # New
+from sqlalchemy import ForeignKey  # New
+
+from stepik.database import Base
 
 
 class Product(Base):
-    __tablename__ = 'products'
+    __tablename__ = "products"
 
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String)
-    slug = Column(String, unique=True, index=True)
-    description = Column(String)
-    price = Column(Integer)
-    image_url = Column(String)
-    stock = Column(Integer)
-    category_id = Column(Integer, ForeignKey('categories.id'))
-    rating = Column(Float)
-    is_active = Column(Boolean, default=True)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column(String(100), nullable=False)
+    description: Mapped[str | None] = mapped_column(String(500), nullable=True)
+    price: Mapped[Decimal] = mapped_column(Numeric(10, 2), nullable=False)
+    image_url: Mapped[str | None] = mapped_column(String(200), nullable=True)
+    stock: Mapped[int] = mapped_column(Integer, nullable=False)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+    category_id: Mapped[int] = mapped_column(ForeignKey("categories.id"), nullable=False)  # New
 
-    category = relationship('Category', back_populates='products', uselist=False)
-
-
-# from sqlalchemy.schema import CreateTable
-# print(CreateTable(Product.__table__))
-
+    category: Mapped["Category"] = relationship(back_populates="products")  # New
