@@ -13,7 +13,7 @@ from stepik.models.users import User as UserModel
 from stepik.auth import get_current_seller, get_current_buyer, get_current_user
 
 
-# Создаём маршрутизатор для товаров
+# Создаём маршрутизатор для отзывов
 router = APIRouter(
     prefix="/reviews",
     tags=["reviews"],
