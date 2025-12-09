@@ -63,8 +63,7 @@ async def update_category(category_id: int, category: CategoryCreate, db: AsyncS
 
     # Проверяем parent_id, если указан
     if category.parent_id is not None:
-        parent_stmt = select(CategoryModel).where(CategoryModel.id == category.parent_id,
-                                                  CategoryModel.is_active == True)
+        parent_stmt = select(CategoryModel).where(CategoryModel.id == category.parent_id, CategoryModel.is_active == True)
         parent_result = await db.scalars(parent_stmt)
         parent = parent_result.first()
         if not parent:
@@ -73,11 +72,10 @@ async def update_category(category_id: int, category: CategoryCreate, db: AsyncS
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Category cannot be its own parent")
 
     # Обновляем категорию
-    update_data = category.model_dump(exclude_unset=True)
     await db.execute(
         update(CategoryModel)
         .where(CategoryModel.id == category_id)
-        .values(**update_data)
+        .values(**category.model_dump(exclude_unset=True))
     )
     await db.commit()
     return db_category

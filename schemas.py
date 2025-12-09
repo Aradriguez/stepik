@@ -1,5 +1,8 @@
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, Field, ConfigDict, EmailStr
 from decimal import Decimal
+from datetime import datetime
+
+from sqlalchemy import DateTime
 
 
 class CategoryCreate(BaseModel):
@@ -55,3 +58,47 @@ class Product(BaseModel):
     is_active: bool = Field(..., description="Активность товара")
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class UserCreate(BaseModel):
+    email: EmailStr = Field(description="Email пользователя")
+    password: str = Field(min_length=8, description="Пароль (минимум 8 символов)")
+    role: str = Field(default="buyer", pattern="^(buyer|seller|admin)$", description="Роль: 'buyer' или 'seller'")
+
+
+class User(BaseModel):
+    id: int
+    email: EmailStr
+    is_active: bool
+    role: str
+    model_config = ConfigDict(from_attributes=True)
+
+
+class RefreshTokenRequest(BaseModel):
+    refresh_token: str
+
+
+class Review(BaseModel):
+    """
+    Модель для ответа с данными отзыва.
+    Используется в GET-запросах.
+    """
+    id: int = Field(..., description="Уникальный идентификатор отзыва")
+    user_id: int = Field(..., description="Уникальный идентификатор пользователя")
+    product_id: int = Field(..., description="Уникальный идентификатор продукта")
+    comment: str | None = Field(None, description="Комментарий пользователя")
+    comment_date: datetime = Field(..., description="Дата комментария")
+    grade: int = Field(ge=0, le=5, description="Оценка комментария")
+    is_active: bool = Field(..., description="Активность комментария")
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class ReviewCreate(BaseModel):
+    """
+    Модель для создания и обновления категории.
+    Используется в POST и PUT запросах.
+    """
+    product_id: int = Field(..., description="Уникальный идентификатор продукта")
+    comment: str | None = Field(None, description="Комментарий пользователя")
+    grade: int = Field(ge=0, le=5, description="Оценка комментария")
